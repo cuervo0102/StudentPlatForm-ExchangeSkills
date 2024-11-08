@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -36,10 +37,16 @@ class CommentController extends Controller
                              ->with('error', 'You must be logged in to create a post');
         }
     
+        $validatedData = $request->validate([
+            'comment' => 'required|string|max:255',
+            'post_id' => 'required|exists:posts,id'
+        ]);
+    
         Comment::create([
-            'comment'=>$request->comment,
-            'user_id' => auth()->id(), 
-        ]); 
+            'comment' => $validatedData['comment'],
+            'user_id' => auth()->id(),
+            'post_id' => $validatedData['post_id'],
+        ]);
         return  redirect()->route('posts.index')
                           ->with('success', 'Comment created successfully');
     }
