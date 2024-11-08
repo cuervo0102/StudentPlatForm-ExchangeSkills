@@ -16,6 +16,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+
         return view('profile.edit', [
             'user' => $request->user(),
         ]);
@@ -26,13 +27,43 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        /**
+         * Update the information of the user, including storing the user's photo and bio.
+         * 
+         * Conditions:
+         * - First, check if the request includes a file and store it in the 'photos' 
+         *   directory that exists in the public folder using the hasFile boolean helper function
+         * - Second check if the request includes a bio and assign it to the bio field 
+         *          using the has method
+         * - Third verify if the email has changed using the isDirty method
+        */
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $request->validate([
+            'photo' => ['required', 'file', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'bio' => ['nullable', 'string']
+        ]);
+ 
+        $user = $request->user();
+        $user->fill($request->validated());
+
+
+        if($request->hasFile('photo')){
+            $photoPath = $request->file('photo')->store('photos', 'public');
+            $user->photo = $photoPath;
         }
 
-        $request->user()->save();
+
+        if($request->has('bio')){
+            $user->bio = $request->bio;
+        }
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+        
+
+
+        $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
