@@ -3,17 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use App\Http\Requests\CreatePostRequest;
 use App\Http\Requests\UpdatePostRequest;
-use App\Http\Requests\PostDeleteRequest;
+use Illuminate\Support\Facades\Auth;
+
 
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
 
 
     public function index()
@@ -34,6 +33,11 @@ class PostController extends Controller
         /**
          * render the html page for creating new record to database
          */
+        if (!auth()->check()) {
+            return redirect()->route('login')
+                             ->with('error', 'You must be logged in to create a post');
+        }
+
         return view('posts.create_post');
     }
 
@@ -42,10 +46,20 @@ class PostController extends Controller
      */
     public function store(CreatePostRequest $request)
 {
-        Post::create($request->validated());
+    if (!auth()->check()) {
+        return redirect()->route('login')
+                         ->with('error', 'You must be logged in to create a post');
+    }
 
-        return redirect()->route('posts.index')->with('success', 'Post created successfully');
+    Post::create([
+        'post' => $request->post, 
+        'user_id' => auth()->id(), 
+    ]);
+
+    return redirect()->route('posts.index')
+                     ->with('success', 'Post created successfully');
 }
+
 
     /**
      * Display the specified resource.
@@ -61,6 +75,8 @@ class PostController extends Controller
     public function edit(string $id)
     {
         $post = Post::findOrFail($id); 
+
+
         return view('posts.edit', compact('post'));
     }
 
@@ -70,6 +86,11 @@ class PostController extends Controller
     public function update(UpdatePostRequest $request, string $id)
     {
         $post = Post::findOrFail($id);
+
+        if ($post->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized');
+        }
+
         $post->update($request->validated());
         return redirect()->route('posts.index')->with('success', 'POst updated successfully');
     }
@@ -80,6 +101,9 @@ class PostController extends Controller
     public function destroy(string $id)
     {
         $post = Post::findOrFail($id);
+        if ($post->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized');
+        }
         $post->delete();
 
         return redirect()->route('posts.index')->with('sucess', 'Post deleted successfully');
