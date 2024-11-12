@@ -21,6 +21,18 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'fields',
+        'date_joining',
+        'school_year',
+        'linkdin_link',
+        'github_link',
+        'photo',
+        'bio'
+    ];
+
+    protected $dates = [
+        'date_joining',
+        'email_verified_at',
     ];
 
     /**
