@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -16,7 +18,6 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-
         return view('profile.edit', [
             'user' => $request->user(),
         ]);
@@ -27,44 +28,66 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        /**
-         * Update the information of the user, including storing the user's photo and bio.
-         * 
-         * Conditions:
-         * - First, check if the request includes a file and store it in the 'photos' 
-         *   directory that exists in the public folder using the hasFile boolean helper function
-         * - Second check if the request includes a bio and assign it to the bio field 
-         *          using the has method
-         * - Third verify if the email has changed using the isDirty method
-        */
+        
+        $user = $request->user();
 
         $request->validate([
-            'photo' => ['required', 'file', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
-            'bio' => ['nullable', 'string']
+            'password' => ['nullable', 'confirmed', 'min:8'],
+            'date_joining' => ['nullable', 'date'],
+            'school_year' => ['nullable', 'in:First Year,Second Year,Third Year,Forth Year,Last Year'],
+            'fields' => ['nullable', 'in:field1,field2,field3'],
+            'linkdin_link' => ['nullable', 'url'],
+            'github_link' => ['nullable', 'url'],
         ]);
- 
-        $user = $request->user();
+
         $user->fill($request->validated());
 
+        
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
 
-        if($request->hasFile('photo')){
+        
+        if ($request->hasFile('photo')) {
             $photoPath = $request->file('photo')->store('photos', 'public');
             $user->photo = $photoPath;
         }
 
-
-        if($request->has('bio')){
+       
+        if ($request->has('bio')) {
             $user->bio = $request->bio;
         }
 
+        if ($request->has('date_joining')) {
+            $user->date_joining = $request->date_joining;
+        }
+
+        if ($request->has('school_year')) {
+            $user->school_year = $request->school_year;
+        }
+
+        if ($request->has('fields')) {
+            $user->fields = $request->fields;
+        }
+
+        if ($request->has('linkdin_link')) {
+            $user->linkdin_link = $request->linkdin_link;
+        }
+
+        if ($request->has('github_link')) {
+            $user->github_link = $request->github_link;
+        }
+
+
+        
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
         }
+
         
-
-
         $user->save();
 
+       
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
@@ -73,19 +96,24 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        // Validate that the password is correct before deletion
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
 
         $user = $request->user();
 
+        // Log the user out
         Auth::logout();
 
+        // Delete the user's account
         $user->delete();
 
+        // Invalidate the session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        // Redirect to home
         return Redirect::to('/');
     }
 }

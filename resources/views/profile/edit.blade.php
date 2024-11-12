@@ -24,19 +24,61 @@
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
-
-        <div>
-            <x-input-label for="bio" :value="__('Bio')" />
-            <textarea id="bio" name="bio" class="form-input mt-1 block w-full" required>{{ old('bio', $user->bio) }}</textarea>
-            <x-input-error class="mt-2" :messages="$errors->get('bio')" />
-        </div>
         
         <div>
             <x-input-label for="photo" :value="__('Photo')" />
             <input id="photo" type="file" name="photo" class="form-input mt-1 block w-full" accept="image/*">
             <x-input-error class="mt-2" :messages="$errors->get('photo')" />
         </div>
-        
+
+        <div>
+            <x-input-label for="bio" :value="__('Bio')" />
+            <textarea id="bio" name="bio" class="form-input mt-1 block w-full" required>{{ old('bio', $user->bio) }}</textarea>
+            <x-input-error class="mt-2" :messages="$errors->get('bio')" />
+        </div>
+
+        <div>
+            <x-input-label for="fields" :value="__('Fields')" />
+            <select id="fields" name="fields" class="form-input mt-1 block w-full" required>
+                <option value="">Select Field</option>
+                <option value="field1" {{ old('fields', $user->fields) == 'field1' ? 'selected' : '' }}>Field 1</option>
+                <option value="field2" {{ old('fields', $user->fields) == 'field2' ? 'selected' : '' }}>Field 2</option>
+                <option value="field3" {{ old('fields', $user->fields) == 'field3' ? 'selected' : '' }}>Field 3</option>
+            </select>
+            <x-input-error class="mt-2" :messages="$errors->get('fields')" />
+        </div>
+
+        <div>
+            <x-input-label for="date_joining" :value="__('Date Joining')" />
+            <x-text-input id="date_joining" name="date_joining" type="date" class="mt-1 block w-full" :value="old('date_joining', $user->date_joining)" required />
+            <x-input-error class="mt-2" :messages="$errors->get('date_joining')" />
+        </div>
+
+        <div>
+            <x-input-label for="school_year" :value="__('School Year')" />
+            <select id="school_year" name="school_year" class="form-input mt-1 block w-full" required>
+                <option value="">Select School Year</option>
+                <option value="First Year" {{ old('school_year', $user->school_year) == 'First Year' ? 'selected' : '' }}>First Year</option>
+                <option value="Second Year" {{ old('school_year', $user->school_year) == 'Second Year' ? 'selected' : '' }}>Second Year</option>
+                <option value="Third Year" {{ old('school_year', $user->school_year) == 'Third Year' ? 'selected' : '' }}>Third Year</option>
+                <option value="Forth Year" {{ old('school_year', $user->school_year) == 'Forth Year' ? 'selected' : '' }}>Forth Year</option>
+                <option value="Last Year" {{ old('school_year', $user->school_year) == 'Last Year' ? 'selected' : '' }}>Last Year</option>
+            </select>
+            <x-input-error class="mt-2" :messages="$errors->get('school_year')" />
+        </div>
+
+        <div> 
+            <x-input-label for="linkdin_link" :value="__('LinkedIn Link')" />
+            <x-text-input id="linkdin_link" name="linkdin_link" type="text" class="mt-1 block w-full" :value="old('linkdin_link', $user->linkdin_link)" />
+            <x-input-error class="mt-2" :messages="$errors->get('linkdin_link')" />
+        </div>
+
+        <div>
+            <x-input-label for="github_link" :value="__('GitHub Link')" />
+            <x-text-input id="github_link" name="github_link" type="text" class="mt-1 block w-full" :value="old('github_link', $user->github_link)" />
+            <x-input-error class="mt-2" :messages="$errors->get('github_link')" />
+        </div>
+
         <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
