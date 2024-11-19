@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\SubFieldController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CommentController;
@@ -23,4 +23,6 @@ Route::resource('posts', PostController::class);
 
 Route::resource('comments', CommentController::class);
 
-require __DIR__.'/auth.php';
+Route::resource('sub-fields', SubFieldController::class);
+
+require __DIR__ . '/auth.php';
