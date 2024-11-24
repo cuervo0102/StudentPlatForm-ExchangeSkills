@@ -6,6 +6,9 @@ use App\Http\Controllers\ProfileController;
 use App\Models\SubFields;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\DB;
+
+
 
 class SubFieldController extends Controller
 {
@@ -17,10 +20,13 @@ class SubFieldController extends Controller
 
 
 
+        $subFields = SubFields::first(); // Example: Fetch the first row
         return view('intrests', [
-            'user' => auth()->user(),
-            'fields'=> $get_field,
+        'user' => auth()->user(),
+        'fields' => $get_field,
+        'savedData' => $subFields ? $subFields->toArray() : [],
         ]);
+
         
         // if ($get_field == 'field1') {
         //     $request->validate([
@@ -55,9 +61,27 @@ class SubFieldController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        //
-    }
+{
+    $validatedData = $request->validate([
+        'sub_field1' => 'array|nullable',
+        'sub_field1.*' => 'in:CyberSecurity,AI,Web,Mobile',
+        'sub_field2' => 'array|nullable',
+        'sub_field2.*' => 'in:sub1,sub2,sub3,sub4',
+        'sub_field3' => 'array|nullable',
+        'sub_field3.*' => 'in:subF1,subF2,subF3,subF4',
+    ]);
+
+
+    SubFields::create([
+        'sub_field1' => $validatedData['sub_field1'] ?? [],
+        'sub_field2' => $validatedData['sub_field2'] ?? [],
+        'sub_field3' => $validatedData['sub_field3'] ?? [],
+    ]);
+
+    return redirect()->back()->with('success', 'Data saved successfully!');
+}
+
+
 
     /**
      * Display the specified resource.

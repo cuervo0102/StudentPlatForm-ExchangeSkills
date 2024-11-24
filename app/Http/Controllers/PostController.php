@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\SubFields;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use App\Http\Requests\CreatePostRequest;
@@ -17,10 +18,7 @@ class PostController extends Controller
 
     public function index()
     {
-        /**
-         * Display list of all records  of post in database
-         * all() function that retrieve data from database
-         */
+      
         $posts = Post::all();
         return view('posts.index', compact('posts'));   
     }
@@ -51,14 +49,23 @@ class PostController extends Controller
                          ->with('error', 'You must be logged in to create a post');
     }
 
+    dd($request->all()); 
+
+    $request->validate([
+        'post' => 'required',
+        'sub_field' => 'required', 
+    ]);
+    
     Post::create([
-        'post' => $request->post, 
-        'user_id' => auth()->id(), 
+        'post' => $request->post,
+        'sub_field' => $request->sub_field,
+        'user_id' => auth()->id(),
     ]);
 
     return redirect()->route('posts.index')
                      ->with('success', 'Post created successfully');
 }
+
 
 
     /**
