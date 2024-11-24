@@ -11,4 +11,12 @@ class SubFields extends Model
         'sub_field2',
         'sub_field3',
     ];
+
+    protected $casts = [
+        'sub_field1' => 'array', 
+        'sub_field2' => 'array',
+        'sub_field3' => 'array',
+    ];
 }
+
+
