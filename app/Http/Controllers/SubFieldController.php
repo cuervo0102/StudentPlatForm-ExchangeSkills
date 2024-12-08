@@ -20,7 +20,7 @@ class SubFieldController extends Controller
 
 
 
-        $subFields = SubFields::first(); // Example: Fetch the first row
+        $subFields = SubFields::first(); 
         return view('intrests', [
         'user' => auth()->user(),
         'fields' => $get_field,
