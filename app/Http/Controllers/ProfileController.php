@@ -42,6 +42,10 @@ class ProfileController extends Controller
 
         $user->fill($request->validated());
 
+        /*
+            This code snippet check the password  from incoming HTTP request 
+            and hash it  
+        */
         
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
@@ -78,6 +82,12 @@ class ProfileController extends Controller
             $user->github_link = $request->github_link;
         }
 
+        /*
+            isDirty boolean method that checks if the email changed or not 
+            if yes it will resturns True which means that email_verified_at has to change too 
+            cuz the old one no longer valid for new email
+        
+        */
 
         
         if ($user->isDirty('email')) {

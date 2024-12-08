@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Welcome Page</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
+    
 
     <style>
         h1{
@@ -54,8 +54,7 @@
             </nav>
     @endif
 
-
-</body>
+    <script src="{{ asset('js/test.js') }}"></script></body>
 </html>
 
                         

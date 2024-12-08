@@ -18,8 +18,25 @@ class PostController extends Controller
 
     public function index()
     {
-      
-        $posts = Post::all();
+        if (!auth()->check()) {
+            return redirect()->route('login')
+                             ->with('error', 'You must be logged in to create a post');
+        }
+        $user = auth()->user();
+
+        $userInterests = $user->subFields->pluck('name');
+
+        // $posts = Post::where(function($query) use ($userInterests) {
+        //     foreach ($userInterests as $interest) {
+        //         $query->orWhereJsonContains('sub_field1', $interest)
+        //               ->orWhereJsonContains('sub_field2', $interest)
+        //               ->orWhereJsonContains('sub_field3', $interest);
+        //     }
+        // })->get();
+
+        $posts = POST::all();
+
+        // $posts = Post::filter();
         return view('posts.index', compact('posts'));   
     }
 
@@ -28,14 +45,14 @@ class PostController extends Controller
      */
     public function create()
     {
-        /**
-         * render the html page for creating new record to database
-         */
+        /*
+            This snippet of code will render the create post template 
+            only if the user authenticated 
+        */
         if (!auth()->check()) {
             return redirect()->route('login')
                              ->with('error', 'You must be logged in to create a post');
-        }
-
+        }     
         return view('posts.create_post');
     }
 
@@ -44,26 +61,29 @@ class PostController extends Controller
      */
     public function store(CreatePostRequest $request)
 {
-    if (!auth()->check()) {
-        return redirect()->route('login')
-                         ->with('error', 'You must be logged in to create a post');
-    }
+        if (!auth()->check()) {
+            return redirect()->route('login')
+                            ->with('error', 'You must be logged in to create a post');
+        }
 
-    dd($request->all()); 
+        // dd($request->all()); 
 
-    $request->validate([
-        'post' => 'required',
-        'sub_field' => 'required', 
-    ]);
-    
-    Post::create([
-        'post' => $request->post,
-        'sub_field' => $request->sub_field,
-        'user_id' => auth()->id(),
-    ]);
+        // validate data before insert it 
+        $request->validate([
+            'post' => 'required',
+            'sub_field' => 'required', 
+        ]);
+        
+        //save the new recoreds in db after the validation 
+        Post::create([
+            'user_id' => auth()->id(),
+            'post' => $request->post,
+            'sub_field' => $request->sub_field,
+            
+        ]);
 
-    return redirect()->route('posts.index')
-                     ->with('success', 'Post created successfully');
+        return redirect()->route('posts.index')
+                        ->with('success', 'Post created successfully');
 }
 
 
@@ -81,6 +101,13 @@ class PostController extends Controller
      */
     public function edit(string $id)
     {
+
+        /*
+            function used to check if the post exists
+            if not exists return 404 nit found 
+            if found returns the view 
+
+        */
         $post = Post::findOrFail($id); 
 
 
